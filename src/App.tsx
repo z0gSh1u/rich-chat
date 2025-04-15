@@ -1,51 +1,55 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import ChatPage from './components/ChatPage'
+import { RightPanel } from './components/RightPanel'
+import './App.css'
+import { ConfigProvider } from './contexts/ConfigContext'
+// MUI Imports
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import Box from '@mui/material/Box'
+
+// Define MUI dark theme
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    // You can further customize the dark theme here
+    // background: {
+    //   default: '#121212',
+    //   paper: '#1e1e1e',
+    // },
+  },
+})
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  // No longer need useEffect to add 'dark' class
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
-  );
+    <ConfigProvider>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline /> {/* Applies baseline styles & dark background */}
+        <Box
+          sx={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100%' }}
+        >
+          {/* Chat Panel (Left 2/3) */}
+          {/* Use Box for layout, sx prop for styling */}
+          <Box
+            sx={{ flex: '2', height: '100%', borderRight: 1, borderColor: 'divider' }}
+          >
+            <ChatPage />
+          </Box>
+          {/* Right Accordion Panel (Right 1/3) */}
+          <Box
+            sx={{
+              flex: '1',
+              height: '100%',
+              overflow: 'hidden' /* bg handled by theme */,
+            }}
+          >
+            <RightPanel />
+          </Box>
+        </Box>
+      </ThemeProvider>
+    </ConfigProvider>
+  )
 }
 
-export default App;
+export default App

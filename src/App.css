@@ -1,3 +1,5 @@
+/* Keep any non-Tailwind/non-Shadcn styles you need */
+
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
 }
@@ -5,29 +7,41 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafb);
 }
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+
+/* Default body styles from create-react-app/vite, adjust as needed */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87); /* Default dark mode text */
+  background-color: #242424; /* Default dark mode background */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
 }
 
-.container {
+/* Ensure root takes full height */
+#root {
+  width: 100%;
+  height: 100vh;
   margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  padding: 0;
+  /* text-align: inherit; - remove if not needed */
+}
+
+/* Keep .container styles if App.tsx structure relies on it, 
+   otherwise remove or adjust. For now, keep it simple. */
+.container {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
@@ -46,6 +60,7 @@
   justify-content: center;
 }
 
+/* Basic link styling, MUI will override these */
 a {
   font-weight: 500;
   color: #646cff;
@@ -56,11 +71,14 @@ a:hover {
   color: #535bf2;
 }
 
+/* Basic heading style, MUI will override */
 h1 {
   text-align: center;
 }
 
-input,
+/* Keep old input/button styles if needed for non-MUI elements, 
+   but likely can be removed */
+/* input,
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -89,13 +107,14 @@ button:active {
 input,
 button {
   outline: none;
-}
+} */
 
 #greet-input {
   margin-right: 5px;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Remove the media query for prefers-color-scheme if MUI handles themes */
+/* @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;
     background-color: #2f2f2f;
@@ -113,4 +132,86 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
+} */
+
+/* Remove old right-panel styles */
+/* .right-panel p {
+  color: #555;
+  font-style: italic;
+} */
+
+/* ChatPage specific styles - keep these */
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.message-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message.user {
+  background-color: #0b93f6;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+}
+
+.message.ai {
+  background-color: #4a4a4a;
+  color: #e0e0e0;
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
+.input-area {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid #444;
+  background-color: #333;
+}
+
+.input-area input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 1px solid #555;
+  border-radius: 20px;
+  margin-right: 10px;
+  background-color: #4a4a4a;
+  color: #e0e0e0;
+  outline: none;
+}
+
+.input-area input::placeholder {
+  color: #888;
+}
+
+.input-area button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #0b93f6;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.input-area button:hover {
+  background-color: #0a84df;
 }
