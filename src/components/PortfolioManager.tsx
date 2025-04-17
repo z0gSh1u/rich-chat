@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -11,73 +11,103 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
+import { useConfig } from '../contexts/ConfigContext'
+import { Holding, PortfolioState } from '../contexts/ConfigContext'
 
-// Simplified portfolio structure for now
-interface Position {
-  id: string
+// Renamed interface to avoid conflict with imported type
+interface PositionInput {
   type: 'Cash' | 'Bonds' | 'Funds' | 'Gold' | 'Stocks'
-  name: string // e.g., Fund Ticker, Stock Symbol, Bond Name
-  amount: number // or units
+  name: string
+  amount: string // Keep amount as string for input handling
 }
 
-const positionTypes: Position['type'][] = ['Cash', 'Bonds', 'Funds', 'Gold', 'Stocks']
+const positionTypes: PositionInput['type'][] = [
+  'Cash',
+  'Bonds',
+  'Funds',
+  'Gold',
+  'Stocks',
+]
 
 export function PortfolioManager() {
-  const [positions, setPositions] = useState<Position[]>([
-    // Example data
-    { id: '1', type: 'Stocks', name: 'AAPL', amount: 10 },
-    { id: '2', type: 'Funds', name: 'VTI', amount: 50 },
-  ])
-  const [newPosition, setNewPosition] = useState({
+  const { portfolio, setPortfolio, isLoading } = useConfig()
+
+  // Use context state for positions, default to empty array if null/loading
+  const positions = portfolio?.holdings ?? []
+
+  // Local state ONLY for the "add new" form
+  const [newPositionInput, setNewPositionInput] = useState<PositionInput>({
     type: 'Stocks',
     name: '',
     amount: '',
   })
 
-  const handleAddPosition = () => {
+  const handleAddPosition = async () => {
     if (
-      !newPosition.name ||
-      !newPosition.amount ||
-      isNaN(parseFloat(newPosition.amount))
+      !newPositionInput.name ||
+      !newPositionInput.amount ||
+      isNaN(parseFloat(newPositionInput.amount))
     )
       return
-    const positionToAdd: Position = {
-      id: Date.now().toString(), // Simple unique ID
-      type: newPosition.type as Position['type'],
-      name: newPosition.name,
-      amount: parseFloat(newPosition.amount),
+
+    // Create the new Holding based on the input
+    const holdingToAdd: Holding = {
+      // id: Date.now().toString(), // We don't have an ID in the Holding struct, maybe add later if needed for deletion/editing
+      ticker: newPositionInput.name, // Assuming name is the ticker for Stocks/Funds
+      quantity: parseFloat(newPositionInput.amount),
+      purchase_price: 0, // Need a way to input purchase price, defaulting to 0 for now
+      // We might need to adjust the Holding structure or the form to capture more info
+      // and differentiate between types (e.g., ticker for stock, name for bond)
     }
-    setPositions([...positions, positionToAdd])
-    // Reset form
-    setNewPosition({ type: 'Stocks', name: '', amount: '' })
-    console.log('Adding position:', positionToAdd) // Log adding
+
+    // Update the context state
+    const currentHoldings = portfolio?.holdings ?? []
+    const updatedPortfolioState: PortfolioState = {
+      holdings: [...currentHoldings, holdingToAdd],
+    }
+
+    try {
+      await setPortfolio(updatedPortfolioState)
+      // Reset form only on successful save
+      setNewPositionInput({ type: 'Stocks', name: '', amount: '' })
+      console.log('Adding position:', holdingToAdd)
+    } catch (error) {
+      console.error('Failed to save portfolio:', error)
+      alert('Failed to add position. Check console for details.')
+    }
   }
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     const { name, value } = event.target
-    setNewPosition((prev) => ({ ...prev, [name]: value }))
+    setNewPositionInput((prev) => ({ ...prev, [name!]: value })) // Use non-null assertion for name if confident
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setNewPosition((prev) => ({ ...prev, [name]: value }))
+    setNewPositionInput((prev) => ({ ...prev, [name]: value }))
   }
+
+  const isDisabled = isLoading // Disable form while loading initial config
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">Portfolio Holdings</Typography>
-
       {/* Display current positions */}
       <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0 }}>
-        {positions.length > 0 ? (
+        {isLoading ? (
+          <ListItem>
+            <ListItemText primary="Loading portfolio..." />
+          </ListItem>
+        ) : positions.length > 0 ? (
           positions.map((pos, index) => (
-            <React.Fragment key={pos.id}>
+            <React.Fragment key={`${pos.ticker}-${index}`}>
+              {' '}
+              {/* Use a more stable key if possible */}
               <ListItem>
                 <ListItemText
-                  primary={`${pos.type}: ${pos.name}`}
-                  secondary={`Amount: ${pos.amount}`}
+                  primary={`${pos.ticker}`}
+                  secondary={`Quantity: ${pos.quantity}, Purchase Price: ${pos.purchase_price}`}
                 />
-                {/* Add Edit/Delete IconButton here later if needed */}
+                {/* Add Edit/Delete IconButton here later */}
               </ListItem>
               {index < positions.length - 1 && <Divider component="li" />}
             </React.Fragment>
@@ -85,7 +115,7 @@ export function PortfolioManager() {
         ) : (
           <ListItem>
             <ListItemText
-              primary="No positions added yet."
+              primary="No holdings added yet."
               sx={{ color: 'text.secondary' }}
             />
           </ListItem>
@@ -94,45 +124,35 @@ export function PortfolioManager() {
 
       {/* Form to add new position */}
       <Box
+        component="form" // Use form element for better semantics
         sx={{
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
-          pt: 2,
-          borderTop: 1,
-          borderColor: 'divider',
+          // pt: 2, // Padding handled by Typography above
+          // borderTop: 1,
+          // borderColor: 'divider',
         }}
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleAddPosition()
+        }} // Handle submit
       >
-        <Typography variant="subtitle1">Add New Position</Typography>
-
-        <FormControl fullWidth size="small">
-          <InputLabel id="position-type-label">Type</InputLabel>
-          <Select
-            labelId="position-type-label"
-            id="type"
-            name="type"
-            value={newPosition.type}
-            label="Type"
-            onChange={handleSelectChange}
-          >
-            {positionTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {/* Removed Type selector for now as Holding struct needs refinement */}
+        {/* <FormControl fullWidth size="small" disabled={isDisabled}> ... </FormControl> */}
 
         <TextField
           fullWidth
           size="small"
           id="name"
           name="name"
-          label="Name/Ticker"
-          value={newPosition.name}
+          label="Ticker Symbol"
+          value={newPositionInput.name}
           onChange={handleInputChange}
           placeholder="e.g., AAPL, VTI"
           variant="outlined"
+          disabled={isDisabled}
+          required // Add basic form validation
         />
 
         <TextField
@@ -140,17 +160,21 @@ export function PortfolioManager() {
           size="small"
           id="amount"
           name="amount"
-          label="Amount/Units"
+          label="Quantity"
           type="number"
-          value={newPosition.amount}
+          value={newPositionInput.amount}
           onChange={handleInputChange}
           placeholder="e.g., 10"
           variant="outlined"
-          inputProps={{ step: 'any' }} // Allow decimals if needed
+          inputProps={{ step: 'any' }}
+          disabled={isDisabled}
+          required
         />
+        {/* Add field for purchase price if needed */}
+        {/* <TextField ... /> */}
 
-        <Button variant="contained" onClick={handleAddPosition} fullWidth>
-          Add Position
+        <Button type="submit" variant="contained" fullWidth disabled={isDisabled}>
+          {isLoading ? 'Loading...' : 'Add Holding'} {/* Update button text */}
         </Button>
       </Box>
     </Box>

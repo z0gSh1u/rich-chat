@@ -14,11 +14,11 @@ interface OpenAIMessage {
   content: string
 }
 
-const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
+const DEFAULT_DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions' // Default URL
 const DEEPSEEK_MODEL = 'deepseek-chat' // Or another model like deepseek-coder
 
 const ChatPage: React.FC = () => {
-  const { apiKey, isLoading: isConfigLoading } = useConfig() // Get API key from context
+  const { apiKey, endpointUrl, isLoading: isConfigLoading } = useConfig() // Get endpointUrl
   const [messages, setMessages] = useState<Message[]>([]) // Start with empty messages
   const [inputText, setInputText] = useState<string>('')
   const [isAiResponding, setIsAiResponding] = useState<boolean>(false)
@@ -44,10 +44,18 @@ const ChatPage: React.FC = () => {
     const trimmedInput = inputText.trim()
     if (trimmedInput === '' || isAiResponding || isConfigLoading) return // Prevent sending if empty, AI is busy, or config loading
 
+    // Use configured URL or default
+    const apiUrl = endpointUrl || DEFAULT_DEEPSEEK_API_URL
+
     if (!apiKey) {
-      alert('Please configure your DeepSeek API Key in the settings panel first.')
+      alert('Please configure your API Key in the settings panel first.')
       return
     }
+    // Optional: Add check for endpointUrl if you want to force user to set it
+    // if (!apiUrl) {
+    //   alert('Please configure the API Endpoint URL in the settings panel first.');
+    //   return;
+    // }
 
     const newUserMessage: Message = {
       id: Date.now(),
@@ -77,7 +85,7 @@ const ChatPage: React.FC = () => {
         { id: aiMessageId, text: '', sender: 'ai' }, // Start with empty text
       ])
 
-      const response = await fetch(DEEPSEEK_API_URL, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +200,8 @@ const ChatPage: React.FC = () => {
   }
 
   // Determine if send should be disabled
-  const sendDisabled = inputText.trim() === '' || isAiResponding || isConfigLoading
+  const sendDisabled =
+    inputText.trim() === '' || isAiResponding || isConfigLoading || !apiKey
 
   return (
     <div className="chat-page">
@@ -227,7 +236,7 @@ const ChatPage: React.FC = () => {
               ? 'AI is responding...'
               : 'Type your message here...'
           }
-          disabled={isAiResponding || isConfigLoading}
+          disabled={sendDisabled}
         />
         <button onClick={handleSendMessage} disabled={sendDisabled}>
           {isAiResponding ? 'Thinking...' : 'Send'}

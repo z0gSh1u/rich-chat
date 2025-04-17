@@ -7,54 +7,70 @@ import { useConfig } from '../contexts/ConfigContext'
 
 export function SystemConfig() {
   // Get state and functions from context
-  const { apiKey: storedApiKey, setApiKey, isLoading } = useConfig()
-  // Local state for the input field, initialized from context
+  const {
+    apiKey: storedApiKey,
+    endpointUrl: storedEndpointUrl,
+    setApiKey,
+    setEndpointUrl,
+    isLoading,
+  } = useConfig()
+
+  // Local state for the input fields, initialized from context
   const [apiTokenInput, setApiTokenInput] = useState<string>('')
+  const [endpointUrlInput, setEndpointUrlInput] = useState<string>('')
 
   // Effect to update local state when context data loads/changes
   useEffect(() => {
-    if (!isLoading && storedApiKey !== null) {
-      setApiTokenInput(storedApiKey)
+    if (!isLoading) {
+      setApiTokenInput(storedApiKey || '')
+      setEndpointUrlInput(storedEndpointUrl || '')
     }
-    // If context is loaded and key is null, ensure input is empty
-    else if (!isLoading && storedApiKey === null) {
-      setApiTokenInput('')
-    }
-  }, [storedApiKey, isLoading])
+  }, [storedApiKey, storedEndpointUrl, isLoading])
 
-  const handleSaveToken = async () => {
-    // Trim whitespace and save null if empty
+  const handleSaveConfig = async () => {
     const tokenToSave = apiTokenInput.trim() || null
+    const urlToSave = endpointUrlInput.trim() || null
     try {
-      await setApiKey(tokenToSave) // Call the context function to save
-      alert('Token saved successfully!') // Provide feedback
+      await setApiKey(tokenToSave)
+      await setEndpointUrl(urlToSave)
+      alert('Configuration saved successfully!')
     } catch (error) {
-      console.error('Failed to save token:', error)
-      alert('Failed to save token. Check console for details.')
+      console.error('Failed to save configuration:', error)
+      alert('Failed to save configuration. Check console for details.')
     }
   }
 
-  // Disable input/button while loading initial config
+  // Disable inputs/button while loading initial config
   const isDisabled = isLoading
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">LLM Configuration</Typography>
       <TextField
         fullWidth
         id="apiToken"
-        label="API Token"
-        type="password" // Use password type to obscure the token
-        value={apiTokenInput} // Use local state for input value
-        onChange={(e) => setApiTokenInput(e.target.value)} // Update local state
-        placeholder="Enter your Large Language Model API token"
+        label="LLM API Key"
+        type="password"
+        value={apiTokenInput}
+        onChange={(e) => setApiTokenInput(e.target.value)}
+        placeholder="Enter your LLM API key"
         variant="outlined"
         size="small"
-        helperText="Your token will be used for chat communication."
         disabled={isDisabled}
       />
-      <Button variant="contained" onClick={handleSaveToken} disabled={isDisabled}>
-        {isLoading ? 'Loading...' : 'Save Token'}
+      <TextField
+        fullWidth
+        id="endpointUrl"
+        label="LLM API Endpoint URL"
+        type="url"
+        value={endpointUrlInput}
+        onChange={(e) => setEndpointUrlInput(e.target.value)}
+        placeholder="e.g., https://api.deepseek.com/v1/chat/completions"
+        variant="outlined"
+        size="small"
+        disabled={isDisabled}
+      />
+      <Button variant="contained" onClick={handleSaveConfig} disabled={isDisabled}>
+        {isLoading ? 'Loading...' : 'Save Configuration'}
       </Button>
     </Box>
   )

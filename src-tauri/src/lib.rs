@@ -1,13 +1,53 @@
 use once_cell::sync::Lazy;
 use rusqlite::{params, Connection, Result};
 use serde::{Deserialize, Serialize};
+use std::error::Error as StdError;
 use std::path::PathBuf;
 use std::sync::Mutex; // Use Mutex for thread-safe access to the connection
-use tauri::Manager; // Required for app_handle() and path()
+use tauri::Manager; // Required for app_handle() and path() // Alias std::error::Error to avoid conflict if needed
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone)] // Added Default and Clone
+// --- Data Structures ---
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct CalendarEvent {
+    id: String,   // Using String for ID, could be number or UUID
+    date: String, // Store date as ISO string (e.g., "YYYY-MM-DD")
+    title: String,
+    description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct CalendarState {
+    events: Vec<CalendarEvent>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct Holding {
+    ticker: String,
+    quantity: f64,       // Using f64 for quantity, adjust if needed
+    purchase_price: f64, // Using f64 for price
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct PortfolioState {
+    holdings: Vec<Holding>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct InvestmentStyleState {
+    // Simplified to a single description string based on component analysis
+    style_description: Option<String>,
+    // risk_tolerance: Option<String>,
+    // investment_goal: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 struct AppConfig {
-    api_key: Option<String>, // Use Option<String> to handle cases where it's not set
+    api_key: Option<String>,
+    endpoint_url: Option<String>,
+    portfolio: Option<PortfolioState>,
+    investment_style: Option<InvestmentStyleState>, // Field name remains the same
+    calendar: Option<CalendarState>,                // Add calendar state
 }
 
 // --- Database Setup ---
@@ -115,20 +155,20 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .manage(DbConnection(Mutex::new(None))) // Add the DB connection state
-        .setup(|app| -> Result<(), Box<dyn std::error::Error>> {
+        .setup(|app| -> Result<(), Box<dyn StdError>> {
             // Explicit return type for setup
             // Initialize the database connection on startup
             let handle = app.handle();
             let db_path = get_database_path(handle).map_err(|e| {
                 eprintln!("Failed to get database path: {}", e);
                 // Return the error as a boxed trait object
-                Box::<dyn std::error::Error>::from(e)
+                Box::<dyn StdError>::from(e)
             })?;
 
             let conn = initialize_database(&db_path).map_err(|e| {
                 eprintln!("Failed to initialize database: {}", e);
                 // Return the error as a boxed trait object
-                Box::new(e) as Box<dyn std::error::Error>
+                Box::new(e) as Box<dyn StdError>
             })?;
 
             // Store the connection in the managed state
@@ -141,7 +181,7 @@ pub fn run() {
                     // Create a new error indicating the mutex was poisoned.
                     let error_message = format!("Mutex was poisoned: {}", poisoned);
                     eprintln!("Critical error during setup: {}", error_message);
-                    return Err(Box::<dyn std::error::Error>::from(error_message));
+                    return Err(Box::<dyn StdError>::from(error_message));
                 }
             }
 
@@ -152,6 +192,6 @@ pub fn run() {
             save_config, // Register the new command
             load_config  // Register the new command
         ])
-        .run(tauri::generate_context!())
+        .run(tauri::generate_context!("../src-tauri/tauri.conf.json"))
         .expect("error while running tauri application");
 }

@@ -1,37 +1,58 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import { useConfig } from '../contexts/ConfigContext'
+import { InvestmentStyleState } from '../contexts/ConfigContext'
 
 export default function InvestmentStyleConfig() {
-  // State for the investment style - load/save persistently later
-  const [investmentStyle, setInvestmentStyle] = useState<string>('')
+  const { investmentStyle, setInvestmentStyle, isLoading } = useConfig()
 
-  const handleSaveStyle = () => {
-    // Placeholder for saving the style
-    console.log('Saving investment style:', investmentStyle)
-    alert('Investment style saved (placeholder - check console)')
+  // Local state for the input, initialized from context
+  const [styleInput, setStyleInput] = useState<string>('')
+
+  useEffect(() => {
+    if (!isLoading && investmentStyle) {
+      setStyleInput(investmentStyle.style_description || '')
+    } else if (!isLoading && !investmentStyle) {
+      setStyleInput('')
+    }
+  }, [investmentStyle, isLoading])
+
+  const handleSaveStyle = async () => {
+    const styleToSave: InvestmentStyleState = {
+      style_description: styleInput.trim() || null,
+    }
+    try {
+      await setInvestmentStyle(styleToSave)
+      alert('Investment style saved successfully!')
+    } catch (error) {
+      console.error('Failed to save style:', error)
+      alert('Failed to save investment style. Check console for details.')
+    }
   }
+
+  const isDisabled = isLoading
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">Personal Investment Style</Typography>
       <TextField
         fullWidth
         id="investmentStyle"
-        label="Describe your investment style in one sentence"
-        value={investmentStyle}
-        onChange={(e) => setInvestmentStyle(e.target.value)}
-        placeholder="e.g., Long-term growth focused, value investor, dividend seeker..."
+        label="Describe your investment style"
+        value={styleInput}
+        onChange={(e) => setStyleInput(e.target.value)}
+        placeholder="e.g., Long-term growth focused..."
         variant="outlined"
         size="small"
-        multiline // Allow multiline just in case, though user asked for sentence
-        rows={3} // Start with a few rows
-        helperText="This helps the AI tailor advice to your preferences. (Persistence not yet implemented)"
+        multiline
+        rows={3}
+        helperText="This helps the AI tailor advice to your preferences."
+        disabled={isDisabled}
       />
-      <Button variant="contained" onClick={handleSaveStyle}>
-        Save Style
+      <Button variant="contained" onClick={handleSaveStyle} disabled={isDisabled}>
+        {isLoading ? 'Loading...' : 'Save Style'}
       </Button>
     </Box>
   )
