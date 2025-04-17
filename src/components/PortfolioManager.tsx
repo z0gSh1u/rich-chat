@@ -104,7 +104,6 @@ export function PortfolioManager() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">Current Holdings</Typography>
       <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0 }}>
         {isLoading ? (
           <ListItem>
@@ -144,12 +143,6 @@ export function PortfolioManager() {
       </List>
 
       {/* Form to add new holding */}
-      <Typography
-        variant="subtitle1"
-        sx={{ pt: 1, borderTop: 1, borderColor: 'divider' }}
-      >
-        Add New Holding
-      </Typography>
       <Box
         component="form"
         onSubmit={(e) => {

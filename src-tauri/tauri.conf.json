@@ -21,6 +21,16 @@
       "csp": null
     }
   },
+  "plugins": {
+    "http": {
+      "scope": [
+        "https://api-one.wallstcn.com/*",
+        "https://xueqiu.com/*",
+        "https://stock.xueqiu.com/*",
+        "https://weibo.com/*"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

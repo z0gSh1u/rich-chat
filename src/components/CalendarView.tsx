@@ -243,10 +243,6 @@ export function CalendarView() {
         <Divider sx={{ width: '100%', my: 1 }} />
 
         {/* Bottom section: Add Event Form */}
-        <Typography variant="subtitle1" sx={{ alignSelf: 'flex-start' }}>
-          Add Event for{' '}
-          {selectedDate ? selectedDate.format('YYYY-MM-DD') : 'selected date'}
-        </Typography>
         <Box
           component="form"
           onSubmit={(e) => {

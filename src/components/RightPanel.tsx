@@ -9,13 +9,14 @@ import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 
 // Your component imports
+import { NewsPanel } from './NewsPanel'
 import { CalendarView } from './CalendarView'
 import { PortfolioManager } from './PortfolioManager'
 import { SystemConfig } from './SystemConfig'
 import InvestmentStyleConfig from './InvestmentStyleConfig'
 
 export function RightPanel() {
-  const [expanded, setExpanded] = React.useState<string | false>('panel1')
+  const [expanded, setExpanded] = React.useState<string | false>('panel0')
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -33,6 +34,21 @@ export function RightPanel() {
         flexDirection: 'column',
       }}
     >
+      <Accordion expanded={expanded === 'panel0'} onChange={handleChange('panel0')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel0bh-content"
+          id="panel0bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>📰 News Today</Typography>
+          {/* Optional: Add secondary heading if needed */}
+          {/* <Typography sx={{ color: 'text.secondary' }}>Event details</Typography> */}
+        </AccordionSummary>
+        <AccordionDetails>
+          <NewsPanel />
+        </AccordionDetails>
+      </Accordion>
+
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}

@@ -162,11 +162,15 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // Register the plugins
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_shell::init())
+        // Keep other existing plugins/setup
         .plugin(tauri_plugin_opener::init())
-        .manage(DbConnection(Mutex::new(None))) // Add the DB connection state
-        .setup(|app| -> Result<(), Box<dyn StdError>> {
-            // Explicit return type for setup
-            // Initialize the database connection on startup
+        .manage(DbConnection(Mutex::new(None)))
+        .setup(|app| {
+            // Removed -> Result<(), Box<dyn StdError>> for brevity, let setup infer
+            // ... database setup ...
             let handle = app.handle();
             let db_path = get_database_path(handle).map_err(|e| {
                 eprintln!("Failed to get database path: {}", e);
@@ -182,25 +186,17 @@ pub fn run() {
 
             // Store the connection in the managed state
             let db_state = handle.state::<DbConnection>();
-            // Use a match or expect for safer unwrapping of the Mutex lock
             match db_state.0.lock() {
                 Ok(mut guard) => *guard = Some(conn),
                 Err(poisoned) => {
-                    // Don't return the PoisonError directly due to lifetimes.
-                    // Create a new error indicating the mutex was poisoned.
                     let error_message = format!("Mutex was poisoned: {}", poisoned);
                     eprintln!("Critical error during setup: {}", error_message);
                     return Err(Box::<dyn StdError>::from(error_message));
                 }
             }
-
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            greet,
-            save_config, // Register the new command
-            load_config  // Register the new command
-        ])
-        .run(tauri::generate_context!("../src-tauri/tauri.conf.json"))
+        .invoke_handler(tauri::generate_handler![greet, save_config, load_config])
+        .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

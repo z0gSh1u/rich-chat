@@ -75,8 +75,7 @@ export default function InvestmentStyleConfig() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {/* Display Saved Styles */}
-      <Typography variant="subtitle1">Current Investment Style Preferences</Typography>
-      <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0, mb: 1 }}>
+      <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0 }}>
         {isLoading ? (
           <ListItem>
             <ListItemText primary="Loading styles..." />
@@ -112,10 +111,7 @@ export default function InvestmentStyleConfig() {
         )}
       </List>
 
-      <Divider sx={{ my: 1 }} />
-
       {/* Add Style Form */}
-      <Typography variant="subtitle1">Add New Style Preference</Typography>
       <Box
         component="form"
         onSubmit={(e) => {
