@@ -23,9 +23,13 @@ struct CalendarState {
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 struct Holding {
-    ticker: String,
-    quantity: f64,       // Using f64 for quantity, adjust if needed
-    purchase_price: f64, // Using f64 for price
+    id: String,     // Added ID
+    r#type: String, // Added type (e.g., "活期存款", "基金", etc.) - using raw identifier
+    name: String,   // Renamed from ticker (e.g., "招商银行活期", "VTI", "工商银行债券")
+    amount: f64,    // Renamed from quantity, represents cash value/amount
+                    // purchase_price: f64, // REMOVED
+                    // ticker: String, // REMOVED
+                    // quantity: f64, // REMOVED
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -34,11 +38,16 @@ struct PortfolioState {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
+struct InvestmentStyleItem {
+    // New struct for list items
+    id: String,
+    description: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 struct InvestmentStyleState {
-    // Simplified to a single description string based on component analysis
-    style_description: Option<String>,
-    // risk_tolerance: Option<String>,
-    // investment_goal: Option<String>,
+    items: Vec<InvestmentStyleItem>, // Changed from style_description
+                                     // style_description: Option<String>, // REMOVED
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -46,8 +55,8 @@ struct AppConfig {
     api_key: Option<String>,
     endpoint_url: Option<String>,
     portfolio: Option<PortfolioState>,
-    investment_style: Option<InvestmentStyleState>, // Field name remains the same
-    calendar: Option<CalendarState>,                // Add calendar state
+    investment_style: Option<InvestmentStyleState>, // Type definition updated implicitly
+    calendar: Option<CalendarState>,
 }
 
 // --- Database Setup ---

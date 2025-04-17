@@ -29,17 +29,16 @@ function App() {
         <Box
           sx={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100%' }}
         >
-          {/* Chat Panel (Left 2/3) */}
-          {/* Use Box for layout, sx prop for styling */}
+          {/* Chat Panel (Left) */}
           <Box
-            sx={{ flex: '2', height: '100%', borderRight: 1, borderColor: 'divider' }}
+            sx={{ flex: '3', height: '100%', borderRight: 1, borderColor: 'divider' }}
           >
             <ChatPage />
           </Box>
-          {/* Right Accordion Panel (Right 1/3) */}
+          {/* Right Accordion Panel (Right) */}
           <Box
             sx={{
-              flex: '1',
+              flex: '2',
               height: '100%',
               overflow: 'hidden' /* bg handled by theme */,
             }}

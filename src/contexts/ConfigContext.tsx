@@ -4,17 +4,23 @@ import { invoke } from '@tauri-apps/api/core'
 // --- Data Structures (Mirroring Rust) ---
 
 export interface Holding {
-  ticker: string
-  quantity: number
-  purchase_price: number
+  id: string
+  type: string
+  name: string
+  amount: number
 }
 
 export interface PortfolioState {
   holdings: Holding[]
 }
 
+export interface InvestmentStyleItem {
+  id: string
+  description: string
+}
+
 export interface InvestmentStyleState {
-  style_description: string | null
+  items: InvestmentStyleItem[]
 }
 
 export interface CalendarEvent {
@@ -107,59 +113,96 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
   }
 
   // Function to update API key and save config
-  const setApiKey = async (key: string | null) => {
+  const setApiKey = async (key: string | null): Promise<void> => {
+    const previousValue = apiKey
     setApiKeyInternal(key)
-    const currentConfig = await loadConfig()
-    if (currentConfig) {
-      await saveConfig({ ...currentConfig, api_key: key })
-    } else {
-      console.error('Cannot save API key: failed to load existing config.')
-      setApiKeyInternal(apiKey)
+    const configToSave: AppConfig = {
+      api_key: key,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: calendar,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving API key, reverting UI.', error)
+      setApiKeyInternal(previousValue)
     }
   }
 
   // Function to update Endpoint URL and save config
-  const setEndpointUrl = async (url: string | null) => {
+  const setEndpointUrl = async (url: string | null): Promise<void> => {
+    const previousValue = endpointUrl
     setEndpointUrlInternal(url)
-    const currentConfig = await loadConfig()
-    if (currentConfig) {
-      await saveConfig({ ...currentConfig, endpoint_url: url })
-    } else {
-      console.error('Cannot save Endpoint URL: failed to load existing config.')
-      setEndpointUrlInternal(endpointUrl)
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: url,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: calendar,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving Endpoint URL, reverting UI.', error)
+      setEndpointUrlInternal(previousValue)
     }
   }
 
-  const setPortfolio = async (newPortfolio: PortfolioState | null) => {
+  const setPortfolio = async (newPortfolio: PortfolioState | null): Promise<void> => {
+    const previousValue = portfolio
     setPortfolioInternal(newPortfolio)
-    const currentConfig = await loadConfig()
-    if (currentConfig) {
-      await saveConfig({ ...currentConfig, portfolio: newPortfolio })
-    } else {
-      console.error('Cannot save Portfolio: failed to load existing config.')
-      setPortfolioInternal(portfolio)
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: newPortfolio,
+      investment_style: investmentStyle,
+      calendar: calendar,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving Portfolio, reverting UI.', error)
+      setPortfolioInternal(previousValue)
     }
   }
 
-  const setInvestmentStyle = async (newStyle: InvestmentStyleState | null) => {
-    setInvestmentStyleInternal(newStyle)
-    const currentConfig = await loadConfig()
-    if (currentConfig) {
-      await saveConfig({ ...currentConfig, investment_style: newStyle })
-    } else {
-      console.error('Cannot save Investment Style: failed to load existing config.')
-      setInvestmentStyleInternal(investmentStyle)
+  const setInvestmentStyle = async (
+    newStyleState: InvestmentStyleState | null
+  ): Promise<void> => {
+    const previousValue = investmentStyle
+    setInvestmentStyleInternal(newStyleState)
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: newStyleState,
+      calendar: calendar,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving Investment Style, reverting UI.', error)
+      setInvestmentStyleInternal(previousValue)
     }
   }
 
-  const setCalendar = async (newCalendar: CalendarState | null) => {
+  const setCalendar = async (newCalendar: CalendarState | null): Promise<void> => {
+    const previousValue = calendar
     setCalendarInternal(newCalendar)
-    const currentConfig = await loadConfig()
-    if (currentConfig) {
-      await saveConfig({ ...currentConfig, calendar: newCalendar })
-    } else {
-      console.error('Cannot save Calendar: failed to load existing config.')
-      setCalendarInternal(calendar)
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: newCalendar,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving Calendar, reverting UI.', error)
+      setCalendarInternal(previousValue)
     }
   }
 
