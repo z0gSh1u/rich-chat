@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 // MUI Imports
 import Accordion from '@mui/material/Accordion'
@@ -8,6 +8,9 @@ import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore' // Corrected import path after install
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
+
+// Import getVersion from tauri api
+import { getVersion } from '@tauri-apps/api/app'
 
 // Your component imports
 import NewsPanel from './NewsPanel'
@@ -19,11 +22,17 @@ import InvestmentStyleConfig from './InvestmentStyleConfig'
 export function RightPanel() {
   const { t } = useTranslation()
   const [expanded, setExpanded] = React.useState<string | false>('panel0')
+  const [appVersion, setAppVersion] = useState<string>('')
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)
     }
+
+  useEffect(() => {
+    // Fetch the app version when the component mounts
+    getVersion().then(setAppVersion)
+  }, [])
 
   return (
     <Box
@@ -121,13 +130,19 @@ export function RightPanel() {
           p: 2,
           textAlign: 'center',
           display: 'flex',
-          gap: 2,
+          gap: 1,
           justifyContent: 'flex-end',
+          alignItems: 'center',
         }}
       >
         <Typography variant="body2" color="text.secondary">
           RichChat {t('rightPanel.by')} z0gSh1u
         </Typography>
+        {appVersion && (
+          <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+            v{appVersion}
+          </Typography>
+        )}
         <Typography variant="body2" color="text.secondary">
           <Link
             href="https://github.com/z0gSh1u/richchat"
