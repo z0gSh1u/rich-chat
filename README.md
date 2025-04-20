@@ -1,66 +1,48 @@
 # RichChat
 
-A desktop chat application built with Tauri, React, and Material UI, designed to interact with Large Language Models (LLMs).
+<p align="center">
+    <img src="docs/screenshot-enus.png" />
+</p>
+
+<p align="center">
+    <a href="README-CN.md">中文 README</a> | <a href="README.md">English README</a>
+</p>
+
+Welcome to **RichChat**, your AI-powered investment advisor designed to help you make informed financial decisions with ease and confidence. Whether you're a seasoned investor or just starting out, RichChat provides personalized insights and strategies tailored to your unique investment profile.
 
 ## Features
 
-- **Tauri Backend:** Cross-platform desktop application powered by Rust.
-- **React Frontend:** User interface built with React, TypeScript, and Vite.
-- **Material UI:** Modern UI components for a clean look and feel.
-- **LLM Integration:** Connects to OpenAI-compatible APIs (currently configured for DeepSeek).
-- **Streaming Responses:** Displays AI responses incrementally as they arrive.
-- **Persistent Configuration:** Saves API keys securely using a local SQLite database.
-- **Modular UI:** Left panel for chat interface, right panel for configuration and tools (Calendar, Portfolio, Investment Style, System Config).
+### Personalized Investment Portfolio
 
-## Technologies
+- **Customizable Portfolios**: Easily manage and adjust your investment portfolio with a user-friendly interface. Add or remove assets with just a few clicks.
+- **Diverse Asset Options**: Choose from a wide range of investment options, including gold funds, equity funds, and more, to diversify your portfolio.
 
-- **Framework:** Tauri (v2)
-- **Frontend:** React, TypeScript, Vite, Material UI (MUI)
-- **Backend:** Rust
-- **Database:** SQLite (via `rusqlite`)
-- **Package Manager:** pnpm
+### Intelligent Investment Advice
 
-## Development Setup
+- **Short-term and Long-term Strategies**: Receive tailored investment strategies that align with your financial goals, whether you're looking for short-term gains or long-term growth.
+- **Risk Management**: Get insights into potential risks and opportunities, helping you make balanced decisions that protect your investments.
 
-1.  **Prerequisites:**
+### Real-time Market Insights
 
-    - Install [Rust](https://www.rust-lang.org/tools/install)
-    - Install [Node.js](https://nodejs.org/) (which includes npm)
-    - Install pnpm: `npm install -g pnpm`
-    - Follow the Tauri [prerequisites guide](https://tauri.app/v2/guides/getting-started/prerequisites) for your specific OS (WebView2 for Windows, etc.).
+- **Up-to-date News**: Stay informed with the latest market news and trends, ensuring you never miss an opportunity.
+- **Event Calendar**: Keep track of important financial events and updates that could impact your investments.
 
-2.  **Clone the repository:**
+### User-friendly Interface
 
-    ```bash
-    git clone https://github.com/z0gSh1u/richchat.git
-    cd richchat
-    ```
+- **Intuitive Design**: Navigate through the app with ease, thanks to a clean and modern interface that prioritizes user experience.
+- **Interactive Elements**: Engage with interactive components that make managing your investments both simple and enjoyable.
 
-3.  **Install dependencies:**
+### Secure and Reliable
 
-    ```bash
-    pnpm install
-    ```
+- **Data Privacy**: Your financial data is protected with top-notch security measures, ensuring your information remains confidential.
+- **Reliable Performance**: Experience a smooth and responsive app that delivers real-time updates and advice without delay.
 
-4.  **Run the development server:**
+## Getting Started
 
-    ```bash
-    pnpm tauri dev
-    ```
+1. **Download and Install**: Get RichChat on your device and set up your account in minutes.
+2. **Set Your Preferences**: Customize your investment profile to receive advice that matches your financial goals.
+3. **Explore and Invest**: Dive into the world of investments with confidence, guided by RichChat's expert insights.
 
-    This will build the Rust backend and start the Vite frontend dev server.
+## Join the Community
 
-5.  **Configuration:**
-    - Open the application.
-    - Navigate to the `⚙️ Configuration` panel on the right.
-    - Enter your LLM API Key (e.g., from DeepSeek) and click "Save Token". The key will be saved locally.
-
-## Building for Production
-
-To build the application for distribution:
-
-```bash
-pnpm tauri build
-```
-
-The executable/installer will be located in `src-tauri/target/release/bundle/`.
+Become part of a growing community of investors who trust RichChat to guide their financial journey. Share your experiences, learn from others, and grow your wealth together.

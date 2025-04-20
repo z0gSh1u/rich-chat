@@ -42,6 +42,7 @@ interface AppConfig {
   portfolio: PortfolioState | null
   investment_style: InvestmentStyleState | null
   calendar: CalendarState | null
+  model: string | null
 }
 
 interface ConfigContextType {
@@ -50,12 +51,20 @@ interface ConfigContextType {
   portfolio: PortfolioState | null
   investmentStyle: InvestmentStyleState | null
   calendar: CalendarState | null
+  model: string | null
   setApiKey: (key: string | null) => Promise<void>
   setEndpointUrl: (url: string | null) => Promise<void>
   setPortfolio: (portfolio: PortfolioState | null) => Promise<void>
   setInvestmentStyle: (style: InvestmentStyleState | null) => Promise<void>
   setCalendar: (calendar: CalendarState | null) => Promise<void>
+  setModel: (model: string | null) => Promise<void>
   isLoading: boolean
+  addCalendarEvent: (
+    title: string,
+    date: string,
+    description?: string | null
+  ) => Promise<void>
+  deleteCalendarEvent: (eventId: string) => Promise<void>
 }
 
 // Create the context with a default value
@@ -74,6 +83,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
   const [investmentStyle, setInvestmentStyleInternal] =
     useState<InvestmentStyleState | null>(null)
   const [calendar, setCalendarInternal] = useState<CalendarState | null>(null)
+  const [model, setModelInternal] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   // Function to load config (used by useEffect and setters)
@@ -86,6 +96,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       setPortfolioInternal(config.portfolio)
       setInvestmentStyleInternal(config.investment_style)
       setCalendarInternal(config.calendar)
+      setModelInternal(config.model)
       return config
     } catch (err) {
       console.error('Failed to load config:', err)
@@ -122,6 +133,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       portfolio: portfolio,
       investment_style: investmentStyle,
       calendar: calendar,
+      model: model,
     }
     try {
       await saveConfig(configToSave)
@@ -141,6 +153,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       portfolio: portfolio,
       investment_style: investmentStyle,
       calendar: calendar,
+      model: model,
     }
     try {
       await saveConfig(configToSave)
@@ -159,6 +172,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       portfolio: newPortfolio,
       investment_style: investmentStyle,
       calendar: calendar,
+      model: model,
     }
     try {
       await saveConfig(configToSave)
@@ -179,6 +193,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       portfolio: portfolio,
       investment_style: newStyleState,
       calendar: calendar,
+      model: model,
     }
     try {
       await saveConfig(configToSave)
@@ -197,6 +212,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
       portfolio: portfolio,
       investment_style: investmentStyle,
       calendar: newCalendar,
+      model: model,
     }
     try {
       await saveConfig(configToSave)
@@ -206,18 +222,114 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
     }
   }
 
+  // Function to add a single calendar event and save
+  const addCalendarEvent = async (
+    title: string,
+    date: string, // Expecting YYYY-MM-DD format
+    description: string | null = null
+  ): Promise<void> => {
+    const newEvent: CalendarEvent = {
+      id: Date.now().toString(), // Simple unique ID generation
+      date,
+      title,
+      description,
+    }
+
+    const currentEvents = calendar?.events ?? []
+    const updatedEvents = [...currentEvents, newEvent]
+    const newCalendarState: CalendarState = { events: updatedEvents }
+
+    const previousCalendarState = calendar
+    setCalendarInternal(newCalendarState) // Update UI optimistically
+
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: newCalendarState,
+      model: model,
+    }
+
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving new Calendar Event, reverting UI.', error)
+      setCalendarInternal(previousCalendarState) // Revert on failure
+      throw error // Re-throw for the caller to handle
+    }
+  }
+
+  // Function to delete a calendar event by ID and save
+  const deleteCalendarEvent = async (eventId: string): Promise<void> => {
+    const currentEvents = calendar?.events ?? []
+    const updatedEvents = currentEvents.filter((event) => event.id !== eventId)
+
+    // Check if anything actually changed
+    if (updatedEvents.length === currentEvents.length) {
+      console.warn('deleteCalendarEvent: Event ID not found:', eventId)
+      return // No change needed
+    }
+
+    const newCalendarState: CalendarState = { events: updatedEvents }
+    const previousCalendarState = calendar
+    setCalendarInternal(newCalendarState) // Update UI optimistically
+
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: newCalendarState,
+      model: model,
+    }
+
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error deleting Calendar Event, reverting UI.', error)
+      setCalendarInternal(previousCalendarState) // Revert on failure
+      throw error // Re-throw for the caller to handle
+    }
+  }
+
+  // Function to update Model and save config
+  const setModel = async (newModel: string | null): Promise<void> => {
+    const previousValue = model
+    setModelInternal(newModel)
+    const configToSave: AppConfig = {
+      api_key: apiKey,
+      endpoint_url: endpointUrl,
+      portfolio: portfolio,
+      investment_style: investmentStyle,
+      calendar: calendar,
+      model: newModel,
+    }
+    try {
+      await saveConfig(configToSave)
+    } catch (error) {
+      console.error('Error saving Model, reverting UI.', error)
+      setModelInternal(previousValue)
+      throw error // Re-throw for the caller to handle
+    }
+  }
+
   const value = {
     apiKey,
     endpointUrl,
     portfolio,
     investmentStyle,
     calendar,
+    model,
     setApiKey,
     setEndpointUrl,
     setPortfolio,
     setInvestmentStyle,
     setCalendar,
+    setModel,
     isLoading,
+    addCalendarEvent,
+    deleteCalendarEvent,
   }
 
   return <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>

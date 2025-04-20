@@ -56,6 +56,7 @@ struct AppConfig {
     portfolio: Option<PortfolioState>,
     investment_style: Option<InvestmentStyleState>, // Type definition updated implicitly
     calendar: Option<CalendarState>,
+    model: Option<String>,
 }
 
 // --- Database Setup ---

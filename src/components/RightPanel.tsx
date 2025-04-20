@@ -20,19 +20,30 @@ import { SystemConfig } from './SystemConfig'
 import InvestmentStyleConfig from './InvestmentStyleConfig'
 
 export function RightPanel() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [expanded, setExpanded] = React.useState<string | false>('panel0')
   const [appVersion, setAppVersion] = useState<string>('')
+  const [todayDate, setTodayDate] = useState<string>('')
 
   const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)
     }
 
   useEffect(() => {
     // Fetch the app version when the component mounts
     getVersion().then(setAppVersion)
-  }, [])
+
+    // Get and format today's date
+    const today = new Date()
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    // Use i18n.language for locale-aware date formatting
+    setTodayDate(today.toLocaleDateString(i18n.language, options))
+  }, [i18n.language]) // Add i18n.language to dependency array
 
   return (
     <Box
@@ -51,11 +62,12 @@ export function RightPanel() {
           aria-controls="panel0bh-content"
           id="panel0bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          <Typography sx={{ width: 'auto', flexShrink: 0 }}>
             {t('rightPanel.newsToday')}
           </Typography>
-          {/* Optional: Add secondary heading if needed */}
-          {/* <Typography sx={{ color: 'text.secondary' }}>Event details</Typography> */}
+          <Typography sx={{ color: 'text.secondary', marginLeft: 'auto' }}>
+            {todayDate}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <NewsPanel />

@@ -7,6 +7,15 @@
   overflow: hidden; /* Prevent layout issues */
 }
 
+/* Header area above messages */
+.chat-header {
+  padding: 8px 16px; /* Add some padding */
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  border-bottom: 1px solid #444; /* Optional separator */
+  background-color: #333; /* Match input area background */
+}
+
 .message-list {
   flex-grow: 1;
   overflow-y: auto; /* Enable scrolling for messages */
@@ -35,6 +44,12 @@
   color: #e0e0e0;
   align-self: flex-start;
   border-bottom-left-radius: 5px;
+}
+
+/* Reduce paragraph margins within AI messages */
+.message.ai p {
+  margin-top: 4px; /* Adjust as needed */
+  margin-bottom: 4px; /* Adjust as needed */
 }
 
 .input-area {

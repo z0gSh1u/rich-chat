@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'

@@ -119,19 +119,17 @@ const NewsList: React.FC<NewsListProps> = ({
                   component="button"
                   variant="body1"
                   onClick={() => handleLinkClick(item.url)}
-                  sx={{ textAlign: 'left', cursor: 'pointer' }}
+                  sx={{ textAlign: 'left', cursor: 'pointer', mr: 1 }}
                 >
                   {item.title}
                 </Link>
+                {item.content && (
+                  <Typography variant="body2" color="text.secondary" component="span">
+                    {item.content}
+                  </Typography>
+                )}
               </Box>
             }
-            secondary={`${new Date(
-              item.timestamp * 1000 // Multiply by 1000 for JS Date
-            ).toLocaleString()} ${item.content ? `- ${item.content}` : ''}`}
-            secondaryTypographyProps={{
-              variant: 'body2',
-              color: 'text.secondary',
-            }}
           />
         </ListItem>
       ))}
@@ -143,7 +141,6 @@ const NewsPanel: React.FC = () => {
   const { t } = useTranslation()
 
   // Separate state for each news source
-  const [wallstreetItems, setWallstreetItems] = useState<NewsItem[]>([])
   const [xueqiuItems, setXueqiuItems] = useState<NewsItem[]>([])
   const [weiboItems, setWeiboItems] = useState<NewsItem[]>([])
   const [cailiansheItems, setCailiansheItems] = useState<NewsItem[]>([])
@@ -158,7 +155,6 @@ const NewsPanel: React.FC = () => {
       setLoading(true)
       setError(null)
       // Reset states before fetching
-      setWallstreetItems([])
       setXueqiuItems([])
       setWeiboItems([])
       setCailiansheItems([])
@@ -258,7 +254,6 @@ const NewsPanel: React.FC = () => {
         console.error('Critical error loading news data:', err)
         setError(t('newsPanel.unexpectedError'))
         // Ensure states are empty on critical error
-        setWallstreetItems([])
         setXueqiuItems([])
         setWeiboItems([])
         setCailiansheItems([])

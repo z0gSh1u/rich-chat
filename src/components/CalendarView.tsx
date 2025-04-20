@@ -1,6 +1,6 @@
 'use client' // Required for react-day-picker interactions
 
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -57,7 +57,7 @@ function DayWithBadge(props: DayWithBadgeProps) {
 
 export function CalendarView() {
   const { t } = useTranslation()
-  const { calendar, setCalendar, isLoading } = useConfig()
+  const { calendar, setCalendar, deleteCalendarEvent, isLoading } = useConfig()
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs())
 
@@ -68,22 +68,12 @@ export function CalendarView() {
   const allEvents = calendar?.events ?? []
 
   // Function to handle event deletion
-  const handleDeleteEvent = async (eventIdToDelete: string) => {
-    const eventToDelete = (calendar?.events ?? []).find((e) => e.id === eventIdToDelete)
-    const eventTitle = eventToDelete ? eventToDelete.title : t('calendar.thisEvent')
-
+  const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
+    if (isDisabled) return // Prevent action if loading
     if (window.confirm(t('calendar.confirmDelete', { title: eventTitle }))) {
-      const currentEvents = calendar?.events ?? []
-      const updatedEvents = currentEvents.filter(
-        (event) => event.id !== eventIdToDelete
-      )
-
-      const updatedCalendarState: CalendarState = {
-        events: updatedEvents,
-      }
-
       try {
-        await setCalendar(updatedCalendarState)
+        await deleteCalendarEvent(eventId)
+        alert(t('calendar.alertDeleteSuccess'))
       } catch (error) {
         console.error('Failed to delete event:', error)
         alert(t('calendar.alertDeleteFailed'))
@@ -120,34 +110,29 @@ export function CalendarView() {
               p: 0,
             }}
           >
-            {eventsToShow.map((event, index) => (
-              <React.Fragment key={event.id}>
-                <ListItem
-                  disablePadding
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDeleteEvent(event.id)}
-                      size="small"
-                      disabled={isLoading}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  }
-                  sx={{ pl: 1 }}
-                >
-                  <ListItemText
-                    primary={event.title}
-                    secondary={event.description}
-                    primaryTypographyProps={{ fontSize: '0.875rem' }}
-                    secondaryTypographyProps={{ fontSize: '0.75rem' }}
-                  />
-                </ListItem>
-                {index < eventsToShow.length - 1 && (
-                  <Divider component="li" variant="inset" />
-                )}
-              </React.Fragment>
+            {eventsToShow.map((event) => (
+              <ListItem
+                key={event.id}
+                disableGutters
+                sx={{ maxWidth: '300px' }}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => handleDeleteEvent(event.id, event.title)}
+                    disabled={isDisabled}
+                  >
+                    <DeleteIcon fontSize="inherit" />
+                  </IconButton>
+                }
+              >
+                <ListItemText
+                  primary={event.title}
+                  secondary={event.description}
+                  sx={{ pr: 4 }}
+                />
+              </ListItem>
             ))}
           </List>
         ) : (
@@ -164,6 +149,7 @@ export function CalendarView() {
   }
 
   const handleAddEvent = async () => {
+    if (isDisabled) return // Prevent action if loading
     if (!selectedDate) {
       alert(t('calendar.alertSelectDate'))
       return
