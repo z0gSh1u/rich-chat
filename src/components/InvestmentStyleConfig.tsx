@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -13,6 +14,7 @@ import { useConfig } from '../contexts/ConfigContext'
 import { InvestmentStyleState, InvestmentStyleItem } from '../contexts/ConfigContext'
 
 export default function InvestmentStyleConfig() {
+  const { t } = useTranslation()
   const { investmentStyle, setInvestmentStyle, isLoading } = useConfig()
 
   // Use context state for the list of items
@@ -40,7 +42,7 @@ export default function InvestmentStyleConfig() {
       setStyleInput('') // Clear input on success
     } catch (error) {
       console.error('Failed to add style:', error)
-      alert('Failed to add investment style. Check console for details.')
+      alert(t('investStyle.alertAddFailed'))
     }
   }
 
@@ -50,7 +52,7 @@ export default function InvestmentStyleConfig() {
 
     if (
       window.confirm(
-        `Are you sure you want to delete style: "${itemToDelete.description}"?`
+        t('investStyle.confirmDelete', { description: itemToDelete.description })
       )
     ) {
       const currentItems = investmentStyle?.items ?? []
@@ -62,7 +64,7 @@ export default function InvestmentStyleConfig() {
         await setInvestmentStyle(updatedStyleState)
       } catch (error) {
         console.error('Failed to delete style:', error)
-        alert('Failed to delete style. Check console for details.')
+        alert(t('investStyle.alertDeleteFailed'))
       }
     }
   }
@@ -78,7 +80,7 @@ export default function InvestmentStyleConfig() {
       <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0 }}>
         {isLoading ? (
           <ListItem>
-            <ListItemText primary="Loading styles..." />
+            <ListItemText primary={t('investStyle.loadingStyles')} />
           </ListItem>
         ) : styleItems.length > 0 ? (
           styleItems.map((item, index) => (
@@ -104,7 +106,7 @@ export default function InvestmentStyleConfig() {
         ) : (
           <ListItem>
             <ListItemText
-              primary="No style preferences added yet."
+              primary={t('investStyle.noStyles')}
               sx={{ color: 'text.secondary', fontStyle: 'italic' }}
             />
           </ListItem>
@@ -123,10 +125,10 @@ export default function InvestmentStyleConfig() {
         <TextField
           fullWidth
           id="investmentStyleInput"
-          label="Describe a style preference"
+          label={t('investStyle.inputLabel')}
           value={styleInput}
           onChange={(e) => setStyleInput(e.target.value)}
-          placeholder="e.g., Focus on high-dividend stocks"
+          placeholder={t('investStyle.inputPlaceholder')}
           variant="outlined"
           size="small"
           multiline
@@ -134,7 +136,7 @@ export default function InvestmentStyleConfig() {
           disabled={isDisabled}
         />
         <Button type="submit" variant="contained" disabled={isDisabled}>
-          {isLoading ? 'Loading...' : 'Add Style'}
+          {isLoading ? t('investStyle.buttonLoading') : t('investStyle.buttonAddStyle')}
         </Button>
       </Box>
     </Box>

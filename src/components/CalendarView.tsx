@@ -1,6 +1,7 @@
 'use client' // Required for react-day-picker interactions
 
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -55,6 +56,7 @@ function DayWithBadge(props: DayWithBadgeProps) {
 }
 
 export function CalendarView() {
+  const { t } = useTranslation()
   const { calendar, setCalendar, isLoading } = useConfig()
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs())
@@ -65,14 +67,12 @@ export function CalendarView() {
 
   const allEvents = calendar?.events ?? []
 
-  // Function to handle event deletion (moved before renderEvents)
+  // Function to handle event deletion
   const handleDeleteEvent = async (eventIdToDelete: string) => {
-    // Find the event title for the confirmation message
     const eventToDelete = (calendar?.events ?? []).find((e) => e.id === eventIdToDelete)
-    const eventTitle = eventToDelete ? eventToDelete.title : 'this event'
+    const eventTitle = eventToDelete ? eventToDelete.title : t('calendar.thisEvent')
 
-    // Ask for confirmation
-    if (window.confirm(`Are you sure you want to delete "${eventTitle}"?`)) {
+    if (window.confirm(t('calendar.confirmDelete', { title: eventTitle }))) {
       const currentEvents = calendar?.events ?? []
       const updatedEvents = currentEvents.filter(
         (event) => event.id !== eventIdToDelete
@@ -86,10 +86,9 @@ export function CalendarView() {
         await setCalendar(updatedCalendarState)
       } catch (error) {
         console.error('Failed to delete event:', error)
-        alert('Failed to delete event. Check console for details.')
+        alert(t('calendar.alertDeleteFailed'))
       }
     }
-    // If user clicks Cancel in window.confirm, do nothing.
   }
 
   // Filter events for the selected date (for the list below)
@@ -101,14 +100,14 @@ export function CalendarView() {
     if (!date) {
       return (
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Select a date to see events.
+          {t('calendar.selectDatePrompt')}
         </Typography>
       )
     }
     return (
       <>
         <Typography variant="subtitle1" gutterBottom>
-          Events for {date.format('YYYY-MM-DD')}:
+          {t('calendar.eventsForDate', { date: date.format('YYYY-MM-DD') })}
         </Typography>
         {eventsToShow.length > 0 ? (
           <List
@@ -157,7 +156,7 @@ export function CalendarView() {
             color="text.secondary"
             sx={{ fontStyle: 'italic' }}
           >
-            No events for this date.
+            {t('calendar.noEventsForDate')}
           </Typography>
         )}
       </>
@@ -166,11 +165,11 @@ export function CalendarView() {
 
   const handleAddEvent = async () => {
     if (!selectedDate) {
-      alert('Please select a date on the calendar first.')
+      alert(t('calendar.alertSelectDate'))
       return
     }
     if (!newEventTitle.trim()) {
-      alert('Please provide a title for the event.')
+      alert(t('calendar.alertProvideTitle'))
       return
     }
 
@@ -190,12 +189,11 @@ export function CalendarView() {
 
     try {
       await setCalendar(updatedCalendarState)
-      // Reset only title and description
       setNewEventTitle('')
       setNewEventDescription('')
     } catch (error) {
       console.error('Failed to save calendar:', error)
-      alert('Failed to add event. Check console for details.')
+      alert(t('calendar.alertAddFailed'))
     }
   }
 
@@ -232,7 +230,7 @@ export function CalendarView() {
           <Box sx={{ flexGrow: 1, mt: 1 }}>
             {isLoading ? (
               <Typography variant="body2" color="text.secondary">
-                Loading events...
+                {t('calendar.loadingEvents')}
               </Typography>
             ) : (
               renderEvents(selectedDate, eventsForSelectedDate)
@@ -252,7 +250,7 @@ export function CalendarView() {
           sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}
         >
           <TextField
-            label="Event Title"
+            label={t('calendar.labelEventTitle')}
             variant="outlined"
             size="small"
             fullWidth
@@ -262,7 +260,7 @@ export function CalendarView() {
             disabled={isDisabled || !selectedDate}
           />
           <TextField
-            label="Event Description (Optional)"
+            label={t('calendar.labelEventDesc')}
             variant="outlined"
             size="small"
             fullWidth
@@ -278,7 +276,7 @@ export function CalendarView() {
             disabled={isDisabled || !selectedDate}
             size="medium"
           >
-            {isLoading ? 'Loading...' : 'Add Event'}
+            {isLoading ? t('calendar.buttonLoading') : t('calendar.buttonAddEvent')}
           </Button>
         </Box>
       </Box>

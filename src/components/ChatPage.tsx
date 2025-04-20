@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next' // Import useTranslation
 import './ChatPage.css' // We'll create this CSS file next
 import { useConfig } from '../contexts/ConfigContext' // Import useConfig
 
@@ -18,6 +19,7 @@ const DEFAULT_DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions' 
 const DEEPSEEK_MODEL = 'deepseek-chat' // Or another model like deepseek-coder
 
 const ChatPage: React.FC = () => {
+  const { t } = useTranslation() // Initialize useTranslation
   const { apiKey, endpointUrl, isLoading: isConfigLoading } = useConfig() // Get endpointUrl
   const [messages, setMessages] = useState<Message[]>([]) // Start with empty messages
   const [inputText, setInputText] = useState<string>('')
@@ -29,11 +31,11 @@ const ChatPage: React.FC = () => {
     setMessages([
       {
         id: Date.now(),
-        text: 'Hello! How can I help you today?',
+        text: t('chat.initialGreeting'), // Translate greeting
         sender: 'ai',
       },
     ])
-  }, [])
+  }, [t]) // Add t to dependency array
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -48,7 +50,7 @@ const ChatPage: React.FC = () => {
     const apiUrl = endpointUrl || DEFAULT_DEEPSEEK_API_URL
 
     if (!apiKey) {
-      alert('Please configure your API Key in the settings panel first.')
+      alert(t('chat.alertConfigureApiKey')) // Translate alert
       return
     }
     // Optional: Add check for endpointUrl if you want to force user to set it
@@ -168,9 +170,9 @@ const ChatPage: React.FC = () => {
           msg.id === aiMessageId
             ? {
                 ...msg,
-                text: `Error fetching response: ${
-                  error instanceof Error ? error.message : String(error)
-                }`,
+                text: t('chat.errorFetchingResponse', {
+                  errorMessage: error instanceof Error ? error.message : String(error),
+                }), // Translate error message
               }
             : msg
         )
@@ -199,6 +201,16 @@ const ChatPage: React.FC = () => {
     }
   }
 
+  // Determine placeholder text
+  const placeholderText = isConfigLoading
+    ? t('chat.placeholderLoadingConfig')
+    : isAiResponding
+    ? t('chat.placeholderAiResponding')
+    : t('chat.placeholderTypeMessage')
+
+  // Determine button text
+  const buttonText = isAiResponding ? t('chat.buttonThinking') : t('chat.buttonSend')
+
   // Determine if send should be disabled
   const sendDisabled =
     inputText.trim() === '' || isAiResponding || isConfigLoading || !apiKey
@@ -218,7 +230,9 @@ const ChatPage: React.FC = () => {
           </div>
         ))}
         {/* Add a loading indicator */}
-        {isAiResponding && <div className="message ai loading">...</div>}
+        {isAiResponding && (
+          <div className="message ai loading">{t('chat.loadingIndicator')}</div>
+        )}
         {/* Element to scroll to */}
         <div ref={messagesEndRef} />
       </div>
@@ -229,17 +243,11 @@ const ChatPage: React.FC = () => {
           value={inputText}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={
-            isConfigLoading
-              ? 'Loading config...'
-              : isAiResponding
-              ? 'AI is responding...'
-              : 'Type your message here...'
-          }
+          placeholder={placeholderText} // Use translated placeholder
           disabled={sendDisabled}
         />
         <button onClick={handleSendMessage} disabled={sendDisabled}>
-          {isAiResponding ? 'Thinking...' : 'Send'}
+          {buttonText} {/* Use translated button text */}
         </button>
       </div>
     </div>

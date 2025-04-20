@@ -2,9 +2,22 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        "https://api-one.wallstcn.com/*",
+        "https://xueqiu.com/*",
+        "https://stock.xueqiu.com/*",
+        "https://weibo.com/*",
+        "https://www.cls.cn/*"
+      ]
+    }
   ]
 }

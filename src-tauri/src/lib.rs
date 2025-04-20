@@ -1,4 +1,3 @@
-use once_cell::sync::Lazy;
 use rusqlite::{params, Connection, Result};
 use serde::{Deserialize, Serialize};
 use std::error::Error as StdError;

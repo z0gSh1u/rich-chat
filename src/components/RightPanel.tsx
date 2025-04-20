@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 // MUI Imports
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -9,13 +10,14 @@ import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 
 // Your component imports
-import { NewsPanel } from './NewsPanel'
+import NewsPanel from './NewsPanel'
 import { CalendarView } from './CalendarView'
 import { PortfolioManager } from './PortfolioManager'
 import { SystemConfig } from './SystemConfig'
 import InvestmentStyleConfig from './InvestmentStyleConfig'
 
 export function RightPanel() {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = React.useState<string | false>('panel0')
 
   const handleChange =
@@ -40,7 +42,9 @@ export function RightPanel() {
           aria-controls="panel0bh-content"
           id="panel0bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>📰 News Today</Typography>
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            {t('rightPanel.newsToday')}
+          </Typography>
           {/* Optional: Add secondary heading if needed */}
           {/* <Typography sx={{ color: 'text.secondary' }}>Event details</Typography> */}
         </AccordionSummary>
@@ -56,7 +60,7 @@ export function RightPanel() {
           id="panel1bh-header"
         >
           <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            📅 Event Calendar
+            {t('rightPanel.eventCalendar')}
           </Typography>
           {/* Optional: Add secondary heading if needed */}
           {/* <Typography sx={{ color: 'text.secondary' }}>Event details</Typography> */}
@@ -72,7 +76,9 @@ export function RightPanel() {
           aria-controls="panel2bh-content"
           id="panel2bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>💼 Portfolio</Typography>
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            {t('rightPanel.portfolio')}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <PortfolioManager />
@@ -86,7 +92,7 @@ export function RightPanel() {
           id="panel3bh-header"
         >
           <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            💡 Investment Style
+            {t('rightPanel.investmentStyle')}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -100,7 +106,9 @@ export function RightPanel() {
           aria-controls="panel4bh-content"
           id="panel4bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>⚙️ Configuration</Typography>
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            {t('rightPanel.configuration')}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <SystemConfig />
@@ -118,7 +126,7 @@ export function RightPanel() {
         }}
       >
         <Typography variant="body2" color="text.secondary">
-          RichChat by z0gSh1u
+          RichChat {t('rightPanel.by')} z0gSh1u
         </Typography>
         <Typography variant="body2" color="text.secondary">
           <Link
@@ -127,7 +135,7 @@ export function RightPanel() {
             rel="noopener noreferrer"
             color="inherit"
           >
-            GitHub
+            {t('rightPanel.githubLink')}
           </Link>
         </Typography>
       </Box>

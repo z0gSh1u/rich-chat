@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -16,32 +17,38 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useConfig } from '../contexts/ConfigContext'
 import { Holding, PortfolioState } from '../contexts/ConfigContext'
 
-// Define allowed holding types
-const holdingTypes = [
-  '活期存款', // Demand Deposit
-  '现金理财', // Cash Management Product
-  '债券', // Bonds
-  '基金', // Funds
-  '黄金', // Gold
-] as const // Use const assertion for type safety
+// Define allowed holding type *keys* for internal use
+const holdingTypeKeys = [
+  'demandDeposit',
+  'cashManagement',
+  'bonds',
+  'funds',
+  'gold',
+] as const
 
-type HoldingType = (typeof holdingTypes)[number] // Create a union type
+type HoldingTypeKey = (typeof holdingTypeKeys)[number]
+
+// Map keys to translated display names
+const getHoldingTypeDisplay = (t: Function, key: HoldingTypeKey): string => {
+  return t(`holdingType.${key}`)
+}
 
 // Interface for the form input state
 interface HoldingInput {
-  type: HoldingType
+  typeKey: HoldingTypeKey // Use key internally
   name: string
   amount: string // Keep amount as string for input handling
 }
 
 export function PortfolioManager() {
+  const { t } = useTranslation()
   const { portfolio, setPortfolio, isLoading } = useConfig()
 
   const holdings = portfolio?.holdings ?? []
 
   // Local state ONLY for the "add new" form
   const [newHoldingInput, setNewHoldingInput] = useState<HoldingInput>({
-    type: '基金', // Default to Funds
+    typeKey: 'funds', // Default to Funds key
     name: '',
     amount: '',
   })
@@ -56,7 +63,8 @@ export function PortfolioManager() {
 
     const holdingToAdd: Holding = {
       id: Date.now().toString(), // Generate unique ID
-      type: newHoldingInput.type,
+      // Save the translated type string when adding
+      type: getHoldingTypeDisplay(t, newHoldingInput.typeKey),
       name: newHoldingInput.name.trim(),
       amount: parseFloat(newHoldingInput.amount),
     }
@@ -69,11 +77,10 @@ export function PortfolioManager() {
     try {
       await setPortfolio(updatedPortfolioState)
       // Reset form
-      setNewHoldingInput({ type: '基金', name: '', amount: '' })
-      // console.log('Adding holding:', holdingToAdd)
+      setNewHoldingInput({ typeKey: 'funds', name: '', amount: '' })
     } catch (error) {
       console.error('Failed to save portfolio:', error)
-      alert('Failed to add holding. Check console for details.')
+      alert(t('portfolio.alertAddFailed'))
     }
   }
 
@@ -82,13 +89,14 @@ export function PortfolioManager() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent
   ) => {
     const { name, value } = event.target
-    setNewHoldingInput((prev) => ({ ...prev, [name!]: value }))
+    // Special handling for the type dropdown
+    const fieldName = name === 'type' ? 'typeKey' : name
+    setNewHoldingInput((prev) => ({ ...prev, [fieldName!]: value }))
   }
 
-  // TODO: Implement delete functionality if needed
   const handleDeleteHolding = async (holdingIdToDelete: string) => {
     console.log('Delete requested for:', holdingIdToDelete) // Placeholder
-    if (!window.confirm('Are you sure you want to delete this holding?')) return
+    if (!window.confirm(t('portfolio.confirmDelete'))) return
     const currentHoldings = portfolio?.holdings ?? []
     const updatedHoldings = currentHoldings.filter((h) => h.id !== holdingIdToDelete)
     const updatedPortfolioState: PortfolioState = { holdings: updatedHoldings }
@@ -96,7 +104,7 @@ export function PortfolioManager() {
       await setPortfolio(updatedPortfolioState)
     } catch (error) {
       console.error('Failed to delete holding:', error)
-      alert('Failed to delete holding.')
+      alert(t('portfolio.alertDeleteFailed'))
     }
   }
 
@@ -107,7 +115,7 @@ export function PortfolioManager() {
       <List dense sx={{ bgcolor: 'background.paper', borderRadius: 1, p: 0 }}>
         {isLoading ? (
           <ListItem>
-            <ListItemText primary="Loading portfolio..." />
+            <ListItemText primary={t('portfolio.loading')} />
           </ListItem>
         ) : holdings.length > 0 ? (
           holdings.map((holding, index) => (
@@ -126,7 +134,7 @@ export function PortfolioManager() {
               >
                 <ListItemText
                   primary={`${holding.type}: ${holding.name}`}
-                  secondary={`金额: ${holding.amount}`}
+                  secondary={`${t('portfolio.amountPrefix')}${holding.amount}`}
                 />
               </ListItem>
               {index < holdings.length - 1 && <Divider component="li" />}
@@ -135,7 +143,7 @@ export function PortfolioManager() {
         ) : (
           <ListItem>
             <ListItemText
-              primary="No holdings added yet."
+              primary={t('portfolio.noHoldings')}
               sx={{ color: 'text.secondary' }}
             />
           </ListItem>
@@ -152,19 +160,19 @@ export function PortfolioManager() {
         sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
       >
         <FormControl fullWidth size="small" disabled={isDisabled}>
-          <InputLabel id="holding-type-label">Type</InputLabel>
+          <InputLabel id="holding-type-label">{t('portfolio.labelType')}</InputLabel>
           <Select
             labelId="holding-type-label"
             id="type"
             name="type"
-            value={newHoldingInput.type}
-            label="Type"
+            value={newHoldingInput.typeKey}
+            label={t('portfolio.labelType')}
             onChange={handleInputChange}
             required
           >
-            {holdingTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
+            {holdingTypeKeys.map((typeKey) => (
+              <MenuItem key={typeKey} value={typeKey}>
+                {getHoldingTypeDisplay(t, typeKey)}
               </MenuItem>
             ))}
           </Select>
@@ -175,10 +183,10 @@ export function PortfolioManager() {
           size="small"
           id="name"
           name="name"
-          label="Name / Identifier"
+          label={t('portfolio.labelName')}
           value={newHoldingInput.name}
           onChange={handleInputChange}
-          placeholder="e.g., 招商银行活期, VTI, 工商银行债券"
+          placeholder={t('portfolio.placeholderName')}
           variant="outlined"
           disabled={isDisabled}
           required
@@ -189,11 +197,11 @@ export function PortfolioManager() {
           size="small"
           id="amount"
           name="amount"
-          label="Amount (Cash Unit)"
+          label={t('portfolio.labelAmount')}
           type="number"
           value={newHoldingInput.amount}
           onChange={handleInputChange}
-          placeholder="e.g., 10000"
+          placeholder={t('portfolio.placeholderAmount')}
           variant="outlined"
           inputProps={{ step: 'any' }}
           disabled={isDisabled}
@@ -201,7 +209,7 @@ export function PortfolioManager() {
         />
 
         <Button type="submit" variant="contained" fullWidth disabled={isDisabled}>
-          {isLoading ? 'Loading...' : 'Add Holding'}
+          {isLoading ? t('portfolio.buttonLoading') : t('portfolio.buttonAddHolding')}
         </Button>
       </Box>
     </Box>

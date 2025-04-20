@@ -13,22 +13,12 @@
     "windows": [
       {
         "title": "RichChat",
-        "width": 800,
-        "height": 600
+        "width": 1280,
+        "height": 720
       }
     ],
     "security": {
       "csp": null
-    }
-  },
-  "plugins": {
-    "http": {
-      "scope": [
-        "https://api-one.wallstcn.com/*",
-        "https://xueqiu.com/*",
-        "https://stock.xueqiu.com/*",
-        "https://weibo.com/*"
-      ]
     }
   },
   "bundle": {
