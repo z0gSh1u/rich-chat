@@ -1,0 +1,93 @@
+name: Release macOS Build
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on tags like v1.0.0, v0.1.2 etc.
+
+jobs:
+  build-macos:
+    runs-on: macos-latest # Use the latest available macOS runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*' # Use the latest LTS version of Node.js
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Toolchain target for macOS universal binary
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      # Install macOS dependencies (Xcode Command Line Tools are usually pre-installed on macos-latest)
+      # If specific libs are needed, add them here, e.g.: brew install openssl
+      - name: Install macOS dependencies (if any)
+        run: |
+          echo "Xcode tools should be pre-installed."
+          # Add any other specific dependencies here if needed, e.g., brew install webrtc
+
+      - name: Build Tauri App (macOS Universal)
+        run: pnpm tauri build --target universal-apple-darwin
+
+      # Note: Signing requires additional setup with Apple Developer certificates/secrets
+      # This basic workflow does not include signing.
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-universal-build-${{ github.ref_name }} # Name artifact with tag
+          path: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app
+
+  build-windows:
+    runs-on: windows-latest # Use the latest available Windows runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      # Install required Windows dependencies (MSVC C++ Build Tools)
+      - name: Install Windows dependencies
+        run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --includeRecommended"
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build Tauri App (Windows)
+        run: pnpm tauri build
+        env:
+          # Fixes a potential VCRUNTIME140.dll error during build
+          RUSTFLAGS: '-C target-feature=+crt-static'
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x86_64-build-${{ github.ref_name }}
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/*.exe
+            !src-tauri/target/release/deps/
+            !src-tauri/target/release/build/
