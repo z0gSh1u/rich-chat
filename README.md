@@ -10,9 +10,9 @@
     <a href="README-CN.md">中文 README</a> | <a href="README.md">English README</a>
 </p>
 
-</div>
-
 Welcome to **RichChat**, your personalized AI-driven investment advisor!
+
+</div>
 
 ## 🌝 Getting Started
 
@@ -86,6 +86,6 @@ The project is continuously iterating, and new features and improvements will be
 
 ## 📜 License
 
-Copyright © 2025 by [z0gSh1u](https://github.com/z0gSh1u).
+Copyright © 2025 by [z0gSh1u](https://github.com/z0gSh1u)
 
 This project is licensed under the [MIT License](LICENSE). This is a permissive open-source license, and the author is not responsible for the use of the software.

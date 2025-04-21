@@ -10,9 +10,9 @@
     <a href="README-CN.md">中文 README</a> | <a href="README.md">English README</a>
 </p>
 
-</div>
-
 欢迎使用 **RichChat**，您的个性化的 AI 驱动的投资顾问！
+
+</div>
 
 ## 🌝 开始
 
@@ -87,6 +87,6 @@ RichChat 支持 DeepSeek V3、DeepSeek R1（深度思考）在内的模型，您
 
 ## 📜 许可证
 
-版权所有 © 2025 by [z0gSh1u](https://github.com/z0gSh1u).
+版权所有 © 2025 by [z0gSh1u](https://github.com/z0gSh1u)
 
 本项目采用 [MIT 许可证](LICENSE)。这是一种宽松的开源许可证，作者不对软件的使用承担责任。
