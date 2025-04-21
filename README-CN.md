@@ -1,44 +1,92 @@
-# RichChat
+<div align="center">
 
 <p align="center">
-    <img src="docs/screenshot-zhcn.png" />
+    <img src="docs/zhcn/screenshot.png" width="600" />
 </p>
+
+# RichChat
 
 <p align="center">
     <a href="README-CN.md">中文 README</a> | <a href="README.md">English README</a>
 </p>
 
-欢迎使用 **RichChat**，您的 AI 驱动投资顾问，旨在帮助您轻松自信地做出明智的财务决策。无论您是经验丰富的投资者还是刚刚起步，RichChat 都能根据您的独特投资档案提供个性化的见解和策略。
+</div>
 
-## 功能
+欢迎使用 **RichChat**，您的个性化的 AI 驱动的投资顾问！
 
-### 个性化投资组合
+## 🌝 开始
 
-- **可定制的投资组合**：通过用户友好的界面轻松管理和调整您的投资组合。只需点击几下即可添加或移除资产。
-- **多样化的资产选项**：从广泛的投资选项中进行选择，包括黄金基金、股票基金等，以实现投资组合的多样化。
+### 直接下载
 
-### 智能投资建议
+请访问 [RichChat Releases](https://github.com/z0gSh1u/richchat/releases) 下载最新版本。我们提供适用于 Windows 和 MacOS（暂未测试）的版本。
 
-- **短期和长期策略**：根据您的财务目标，提供量身定制的投资策略，无论您是寻求短期收益还是长期增长。
-- **风险管理**：获取潜在风险和机会的见解，帮助您做出平衡的决策以保护您的投资。
+### 自行构建
 
-### 实时市场洞察
+RichChat 使用 Tauri 框架，您需要 Node.js 和 Rust 环境。随后可使用 `pnpm tauri build` 命令构建。
 
-- **最新新闻**：通过最新的市场新闻和趋势保持信息更新，确保您不会错过任何机会。
-- **事件日历**：跟踪可能影响您投资的重要财务事件和更新。
+## 🔮 功能
 
-### 用户友好的界面
+### 每日新闻
 
-- **直观的设计**：凭借简洁现代的界面，轻松导航应用程序，优先考虑用户体验。
-- **互动元素**：通过互动组件进行参与，使管理您的投资既简单又愉快。
+<p align="center">
+    <img src="docs/zhcn/news-today.png" width="320" />
+</p>
 
-### 安全可靠
+通过来自华尔街见闻、雪球、微博热搜、财联社的最新市场新闻，使 LLM 保持信息更新。
 
-- **数据隐私**：您的财务数据受到顶级安全措施的保护，确保您的信息保持机密。
-- **可靠的性能**：体验流畅且响应迅速的应用程序，实时提供更新和建议，无延迟。
+> \[!TIP]
+>
+> 本功能基于 [newsnow](https://github.com/ourongxing/newsnow) 整理的有关 API。
 
-## 入门指南
+### 事件日历
 
-1. **下载和安装**：在您的设备上获取 RichChat，并在几分钟内设置您的帐户。
-2. **设置您的偏好**：自定义您的投资档案，以接收符合您财务目标的建议。
-3. **探索和投资**：在 RichChat 的专家见解指导下，自信地进入投资世界。
+<p align="center">
+    <img src="docs/zhcn/add-to-calendar.png" width="320" />
+</p>
+
+将包括每日新闻总结、每日投资建议在内的各种信息存入日历中，为 RichChat 提供带时间维度的信息源。
+
+### 投资组合
+
+<p align="center">
+    <img src="docs/zhcn/portfolio.png" width="320" />
+</p>
+
+管理包括现金理财、债券、基金、贵金属在内的多种投资标的的持仓，使 RichChat 给出具体的调仓建议。
+
+> \[!TIP]
+>
+> 对于基金，在录入持仓时无需具体到基金公司。例如，“中证 A50”就是个好的名称。
+
+### 投资风格
+
+<p align="center">
+    <img src="docs/zhcn/investment-style.png" width="320" />
+</p>
+
+描述您的投资风格能让 RichChat 更好地理解您的投资目标和风险承受能力，从而提供更符合您需求的建议。
+
+> \[!TIP]
+>
+> 您可以描述您的投资风格，例如“专注于高股息股票”或“偏好长期增长”。
+
+### 系统配置
+
+<p align="center">
+    <img src="docs/zhcn/configuration.png" width="320" />
+</p>
+
+RichChat 支持 DeepSeek V3、DeepSeek R1（深度思考）在内的模型，您可自行配置 API Key。使用过程中产生的所有数据
+也均保存在您本地的 SQLite 数据库中，无须担心 RichChat 引入的数据安全问题。
+
+## ⭐ 保持关注
+
+如果您觉得这个项目对您有帮助，请不要忘记为它点亮 Star。
+
+项目正在持续迭代中，新的功能和改进将不断推出。
+
+## 📜 许可证
+
+版权所有 © 2025 by [z0gSh1u](https://github.com/z0gSh1u).
+
+本项目采用 [MIT 许可证](LICENSE)。这是一种宽松的开源许可证，作者不对软件的使用承担责任。

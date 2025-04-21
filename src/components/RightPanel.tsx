@@ -113,7 +113,7 @@ export function RightPanel() {
           aria-controls="panel3bh-content"
           id="panel3bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          <Typography sx={{ width: '50%', flexShrink: 0 }}>
             {t('rightPanel.investmentStyle')}
           </Typography>
         </AccordionSummary>

@@ -1,48 +1,91 @@
-# RichChat
+<div align="center">
 
 <p align="center">
-    <img src="docs/screenshot-enus.png" />
+    <img src="docs/enus/screenshot.png" width="600" />
 </p>
+
+# RichChat
 
 <p align="center">
     <a href="README-CN.md">中文 README</a> | <a href="README.md">English README</a>
 </p>
 
-Welcome to **RichChat**, your AI-powered investment advisor designed to help you make informed financial decisions with ease and confidence. Whether you're a seasoned investor or just starting out, RichChat provides personalized insights and strategies tailored to your unique investment profile.
+</div>
 
-## Features
+Welcome to **RichChat**, your personalized AI-driven investment advisor!
 
-### Personalized Investment Portfolio
+## 🌝 Getting Started
 
-- **Customizable Portfolios**: Easily manage and adjust your investment portfolio with a user-friendly interface. Add or remove assets with just a few clicks.
-- **Diverse Asset Options**: Choose from a wide range of investment options, including gold funds, equity funds, and more, to diversify your portfolio.
+### Direct Download
 
-### Intelligent Investment Advice
+Please visit [RichChat Releases](https://github.com/z0gSh1u/richchat/releases) to download the latest version. We offer versions for Windows and MacOS (not yet tested).
 
-- **Short-term and Long-term Strategies**: Receive tailored investment strategies that align with your financial goals, whether you're looking for short-term gains or long-term growth.
-- **Risk Management**: Get insights into potential risks and opportunities, helping you make balanced decisions that protect your investments.
+### Build Yourself
 
-### Real-time Market Insights
+RichChat uses the Tauri framework, and you need Node.js and Rust environments. You can then build using the `pnpm tauri build` command.
 
-- **Up-to-date News**: Stay informed with the latest market news and trends, ensuring you never miss an opportunity.
-- **Event Calendar**: Keep track of important financial events and updates that could impact your investments.
+## 🔮 Features
 
-### User-friendly Interface
+### Daily News
 
-- **Intuitive Design**: Navigate through the app with ease, thanks to a clean and modern interface that prioritizes user experience.
-- **Interactive Elements**: Engage with interactive components that make managing your investments both simple and enjoyable.
+<p align="center">
+    <img src="docs/enus/news-today.png" width="320" />
+</p>
 
-### Secure and Reliable
+Keep the LLM updated with the latest market news from Wall Street Insights, Snowball, Weibo Hot Search, and Cailian Press.
 
-- **Data Privacy**: Your financial data is protected with top-notch security measures, ensuring your information remains confidential.
-- **Reliable Performance**: Experience a smooth and responsive app that delivers real-time updates and advice without delay.
+> \[!TIP]
+>
+> This feature is based on the APIs organized by [newsnow](https://github.com/ourongxing/newsnow).
 
-## Getting Started
+### Event Calendar
 
-1. **Download and Install**: Get RichChat on your device and set up your account in minutes.
-2. **Set Your Preferences**: Customize your investment profile to receive advice that matches your financial goals.
-3. **Explore and Invest**: Dive into the world of investments with confidence, guided by RichChat's expert insights.
+<p align="center">
+    <img src="docs/enus/add-to-calendar.png" width="320" />
+</p>
 
-## Join the Community
+Store various information, including daily news summaries and daily investment advice, into the calendar, providing RichChat with a time-dimensional information source.
 
-Become part of a growing community of investors who trust RichChat to guide their financial journey. Share your experiences, learn from others, and grow your wealth together.
+### Portfolio
+
+<p align="center">
+    <img src="docs/enus/portfolio.png" width="320" />
+</p>
+
+Manage holdings of various investment targets, including cash management, bonds, funds, and precious metals, so that RichChat can provide specific rebalancing suggestions.
+
+> \[!TIP]
+>
+> For funds, there is no need to specify the fund company when entering holdings. For example, "CSI A50" is a good name.
+
+### Investment Style
+
+<p align="center">
+    <img src="docs/enus/investment-style.png" width="320" />
+</p>
+
+Describing your investment style allows RichChat to better understand your investment goals and risk tolerance, providing advice that better meets your needs.
+
+> \[!TIP]
+>
+> You can describe your investment style, such as "focus on high dividend stocks" or "prefer long-term growth."
+
+### System Configuration
+
+<p align="center">
+    <img src="docs/enus/configuration.png" width="320" />
+</p>
+
+RichChat supports models including DeepSeek V3 and DeepSeek R1 (Deep Thinking), and you can configure the API Key yourself. All data generated during use is also stored in your local SQLite database, so there is no need to worry about data security issues introduced by RichChat.
+
+## ⭐ Stay Tuned
+
+If you find this project helpful, don't forget to give it a Star.
+
+The project is continuously iterating, and new features and improvements will be launched continuously.
+
+## 📜 License
+
+Copyright © 2025 by [z0gSh1u](https://github.com/z0gSh1u).
+
+This project is licensed under the [MIT License](LICENSE). This is a permissive open-source license, and the author is not responsible for the use of the software.

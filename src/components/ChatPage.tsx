@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next' // Import useTranslation
 import './ChatPage.css' // We'll create this CSS file next
 import { useConfig } from '../contexts/ConfigContext' // Import useConfig
@@ -26,12 +26,6 @@ import {
 // Import the prompt builder utility
 import { buildNewsSummaryPrompt } from '../utils/promptUtils'
 import { buildInvestmentAdvicePrompt } from '../utils/promptUtils'
-import {
-  CalendarEvent,
-  CalendarState,
-  PortfolioState,
-  InvestmentStyleState,
-} from '../contexts/ConfigContext'
 import { EventEditModal } from './EventEditModal' // Import the modal
 
 interface Message {
@@ -539,29 +533,30 @@ const ChatPage: React.FC = (): JSX.Element => {
           onClick={handleGetInvestmentAdvice}
           disabled={isAiResponding || isConfigLoading || !apiKey}
           sx={{
-            borderRadius: '20px 0 0 20px', // Left part of group
+            borderRadius: '20px', // Standard border radius
             whiteSpace: 'nowrap',
             fontSize: '0.8rem',
-            borderRight: 'none', // Remove border between this and icon
-            pl: 1.5,
-            pr: 1,
+            pl: 1.5, // Keep padding
+            pr: 1.5, // Adjust padding if needed (was 1)
+            mr: 1, // Add margin between buttons
           }}
         >
           {t('chat.buttonGetAdvice')}
         </Button>
         <IconButton
-          size="small"
           aria-describedby={popoverId}
           onClick={handlePopoverOpen}
           disabled={isAiResponding || isConfigLoading || !apiKey}
           sx={{
-            borderRadius: '0 20px 20px 0', // Right part of group
-            border: `1px solid ${theme.palette.divider}`,
-            borderLeft: 'none',
-            ml: '-1px', // Overlap borders slightly
-            mr: 1, // Add margin to separate from New Chat
+            borderRadius: '20px', // Standard border radius
+            border: `1px solid ${theme.palette.divider}`, // Keep theme border
+            mr: 1, // Keep margin to separate from New Chat
             px: 0.5,
             fontSize: '1.2rem', // Icon size
+            '&:hover': {
+              borderColor: theme.palette.text.primary,
+              backgroundColor: 'action.hover',
+            },
           }}
         >
           <SettingsIcon fontSize="inherit" />
