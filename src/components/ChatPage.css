@@ -9,11 +9,18 @@
 
 /* Header area above messages */
 .chat-header {
-  padding: 8px 16px; /* Add some padding */
   display: flex;
-  justify-content: flex-end; /* Align button to the right */
-  border-bottom: 1px solid #444; /* Optional separator */
-  background-color: #333; /* Match input area background */
+  align-items: center;
+  padding: 8px 16px; /* Adjust padding as needed */
+  border-bottom: 1px solid #444; /* Add a separator line */
+  background-color: #333; /* Match overall theme if needed */
+}
+
+.chat-logo {
+  height: 32px; /* Adjust size as needed */
+  width: 32px; /* Adjust size as needed */
+  margin-right: 16px; /* Space between logo and buttons */
+  vertical-align: middle; /* Align vertically with buttons */
 }
 
 .message-list {
@@ -48,6 +55,26 @@
 
 /* Reduce paragraph margins within AI messages */
 .message.ai p {
+  margin-top: 4px; /* Adjust as needed */
+  margin-bottom: 4px; /* Adjust as needed */
+}
+
+.message.user h1,
+.message.user h2,
+.message.user h3,
+.message.user h4,
+.message.user h5,
+.message.user h6 {
+  margin-top: 4px; /* Adjust as needed */
+  margin-bottom: 4px; /* Adjust as needed */
+}
+
+.message.ai h1,
+.message.ai h2,
+.message.ai h3,
+.message.ai h4,
+.message.ai h5,
+.message.ai h6 {
   margin-top: 4px; /* Adjust as needed */
   margin-bottom: 4px; /* Adjust as needed */
 }

@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore' // Corrected import path after install
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
+import { open } from '@tauri-apps/plugin-shell'
 
 // Import getVersion from tauri api
 import { getVersion } from '@tauri-apps/api/app'
@@ -157,10 +158,15 @@ export function RightPanel() {
         )}
         <Typography variant="body2" color="text.secondary">
           <Link
-            href="https://github.com/z0gSh1u/richchat"
-            target="_blank"
-            rel="noopener noreferrer"
+            onClick={async () => {
+              try {
+                await open('https://github.com/z0gSh1u/richchat')
+              } catch (error) {
+                console.error('Failed to open URL', error)
+              }
+            }}
             color="inherit"
+            style={{ cursor: 'pointer' }}
           >
             {t('rightPanel.githubLink')}
           </Link>

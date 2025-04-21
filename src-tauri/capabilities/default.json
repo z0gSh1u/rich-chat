@@ -9,6 +9,8 @@
     "core:default",
     "opener:default",
     "http:default",
+    "shell:allow-open",
+    "shell:default",
     {
       "identifier": "http:allow-fetch",
       "allow": [

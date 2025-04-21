@@ -104,5 +104,14 @@
   "chat.adviceOptionDate": "Include Today's Date",
   "chat.adviceOptionEvents": "Include Recent Events",
   "chat.adviceOptionPortfolio": "Include Portfolio",
-  "chat.adviceOptionStyle": "Include Investment Style"
+  "chat.adviceOptionStyle": "Include Investment Style",
+  "chat.editEventTitle": "Edit Calendar Event",
+  "chat.eventDateLabel": "Date",
+  "common.cancel": "Cancel",
+  "common.save": "Save",
+  "chat.presetTitleNews": "Today's News Summary",
+  "chat.presetTitleAdvice": "Today's Investment Advice",
+  "calendar.detailModalTitle": "Event Details",
+  "common.close": "Close",
+  "chat.systemPrompt": "You are an investment and financial expert. Please provide investment advice based on today's news, past events, and predictable future events, considering the user's portfolio and investment style."
 }

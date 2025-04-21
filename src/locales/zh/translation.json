@@ -104,5 +104,14 @@
   "chat.adviceOptionDate": "包含今日日期",
   "chat.adviceOptionEvents": "包含近期事件",
   "chat.adviceOptionPortfolio": "包含投资组合",
-  "chat.adviceOptionStyle": "包含投资风格"
+  "chat.adviceOptionStyle": "包含投资风格",
+  "chat.editEventTitle": "添加日历事件",
+  "chat.eventDateLabel": "日期",
+  "common.cancel": "取消",
+  "common.save": "保存",
+  "chat.presetTitleNews": "今日新闻摘要",
+  "chat.presetTitleAdvice": "今日投资建议",
+  "calendar.detailModalTitle": "事件详情",
+  "common.close": "关闭",
+  "chat.systemPrompt": "你是一位投资理财专家。请结合今日新闻、过往事件、未来可预期事件来提供投资理财建议，并考虑用户的投资组合、投资风格。"
 }

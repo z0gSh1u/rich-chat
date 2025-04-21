@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next' // Import useTranslation
 import './ChatPage.css' // We'll create this CSS file next
 import { useConfig } from '../contexts/ConfigContext' // Import useConfig
@@ -26,6 +26,13 @@ import {
 // Import the prompt builder utility
 import { buildNewsSummaryPrompt } from '../utils/promptUtils'
 import { buildInvestmentAdvicePrompt } from '../utils/promptUtils'
+import {
+  CalendarEvent,
+  CalendarState,
+  PortfolioState,
+  InvestmentStyleState,
+} from '../contexts/ConfigContext'
+import { EventEditModal } from './EventEditModal' // Import the modal
 
 interface Message {
   id: number
@@ -35,8 +42,16 @@ interface Message {
 
 // Define the structure for OpenAI-compatible API messages
 interface OpenAIMessage {
-  role: 'user' | 'assistant'
+  role: 'user' | 'assistant' | 'system'
   content: string
+}
+
+// Interface for event details being edited
+interface EditingEvent {
+  id?: string // Optional, might not have one before saving
+  title: string
+  date: string // YYYY-MM-DD format
+  description: string | null
 }
 
 const DEFAULT_DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
@@ -70,6 +85,10 @@ const ChatPage: React.FC = (): JSX.Element => {
     includeStyle: true,
   })
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null)
+
+  // State for the Event Editing Modal
+  const [isEventModalOpen, setIsEventModalOpen] = useState<boolean>(false)
+  const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
 
   // Initial greeting or load previous chat if desired
   useEffect(() => {
@@ -116,7 +135,9 @@ const ChatPage: React.FC = (): JSX.Element => {
     }
 
     // Format messages for the API, adding the current prompt as the last user message
+    const systemPromptText = t('chat.systemPrompt') // Get translated prompt
     const apiMessages: OpenAIMessage[] = [
+      { role: 'system', content: systemPromptText }, // Prepend the translated system prompt
       ...messagesForApi.map((msg) => ({
         role: msg.sender === 'user' ? ('user' as const) : ('assistant' as const),
         content: msg.text,
@@ -456,6 +477,30 @@ const ChatPage: React.FC = (): JSX.Element => {
     }
   }
 
+  // Placeholder: Function to handle closing the modal
+  const handleCloseEventModal = () => {
+    setIsEventModalOpen(false)
+    setEditingEvent(null)
+  }
+
+  // Placeholder: Function to handle saving the event from the modal
+  const handleSaveEvent = async (eventData: EditingEvent) => {
+    if (!eventData.title) {
+      alert(t('calendar.alertProvideTitle')) // Use existing translation
+      return
+    }
+    try {
+      console.log('Saving event:', eventData) // Log for debugging
+      // TODO: Call addCalendarEvent with correct parameters (title, date, description)
+      await addCalendarEvent(eventData.title, eventData.date, eventData.description)
+      alert(t('chat.alertAddEventSuccess')) // Reuse existing success message
+      handleCloseEventModal()
+    } catch (error) {
+      console.error('Failed to save event from modal:', error)
+      alert(t('chat.alertAddEventFailed')) // Reuse existing fail message
+    }
+  }
+
   // Determine placeholder text
   const placeholderText = isConfigLoading
     ? t('chat.placeholderLoadingConfig')
@@ -474,6 +519,7 @@ const ChatPage: React.FC = (): JSX.Element => {
     <div className="chat-page">
       {/* Header for Buttons */}
       <div className="chat-header">
+        <img src="/icon.png" alt="Logo" className="chat-logo" />
         <Box sx={{ flexGrow: 1 }} /> {/* Spacer pushes buttons to the right */}
         <Button
           variant="outlined"
@@ -609,13 +655,8 @@ const ChatPage: React.FC = (): JSX.Element => {
         {messages.map((message) => (
           <div key={message.id} className={`message ${message.sender}`}>
             {message.sender === 'user' ? (
-              // Keep simple rendering for user messages (or enhance later if needed)
-              message.text.split('\n').map((line, index) => (
-                <React.Fragment key={index}>
-                  {line}
-                  <br />
-                </React.Fragment>
-              ))
+              // Render user messages using ReactMarkdown
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
             ) : (
               // Render AI messages with optional 'Add to Calendar' button
               <Box>
@@ -629,17 +670,23 @@ const ChatPage: React.FC = (): JSX.Element => {
                     startIcon={<CalendarTodayIcon fontSize="inherit" />}
                     disabled={streamingMessageId === message.id} // Disable if this message is currently streaming
                     onClick={async () => {
-                      try {
-                        // Get today's date in YYYY-MM-DD format
-                        const today = new Date()
-                          .toLocaleDateString('en-CA') // 'en-CA' gives YYYY-MM-DD
-                          .split('T')[0]
-                        await addCalendarEvent(message.text, today)
-                        alert(t('chat.alertAddEventSuccess'))
-                      } catch (error) {
-                        console.error('Failed to add event:', error)
-                        alert(t('chat.alertAddEventFailed'))
-                      }
+                      // --- Updated Logic for Empty Title / Full Description ---
+                      // 1. Set default title to empty and description to the full message
+                      const defaultTitle = '' // Leave title empty by default
+                      const defaultDescription = message.text.trim() // Use full message text for description
+
+                      // 2. Get today's date
+                      const today = new Date()
+                        .toLocaleDateString('en-CA') // 'en-CA' gives YYYY-MM-DD
+                        .split('T')[0]
+
+                      // 3. Set state for modal
+                      setEditingEvent({
+                        title: defaultTitle,
+                        description: defaultDescription,
+                        date: today,
+                      })
+                      setIsEventModalOpen(true)
                     }}
                     sx={{
                       textTransform: 'none', // Prevent uppercase
@@ -718,6 +765,15 @@ const ChatPage: React.FC = (): JSX.Element => {
           {buttonText}
         </Button>
       </div>
+      {/* Render the EventEditModal conditionally */}
+      {isEventModalOpen && editingEvent && (
+        <EventEditModal
+          open={isEventModalOpen}
+          event={editingEvent}
+          onClose={handleCloseEventModal}
+          onSave={handleSaveEvent}
+        />
+      )}
     </div>
   )
 }
